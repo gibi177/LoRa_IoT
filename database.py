@@ -1,56 +1,63 @@
-# database.py
 import sqlite3
 import logging
 
-DATABASE_FILE = "monitoramento.db"
+DATABASE_FILE = "sensors.db"
 
-def inicializar_db():
-    """Cria a tabela de dados se ela não existir."""
+def initialize_db():
+    """Cria a tabela de dados se ela não existir"""
+
     try:
-        conn = sqlite3.connect(DATABASE_FILE)
-        cursor = conn.cursor()
+        conn = sqlite3.connect(DATABASE_FILE) # Conecta ao banco de dados
+        cursor = conn.cursor() # Cria cursor, objeto usado para executar comandos SQL
+        # Note que id é uma coluna do dataset em que cada valor é único e não pode ser NULL.
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS leituras (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE IF NOT EXISTS Readings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
             node_id TEXT NOT NULL,
             timestamp TEXT NOT NULL,
-            temperatura REAL,
-            umidade REAL,
-            poeira REAL
+            temperature REAL,
+            humidity REAL,
+            dust REAL
         )
         """)
-        conn.commit()
-        conn.close()
+        conn.commit() # Salvar mudanças 
+        conn.close()  
         logging.info("Banco de dados inicializado com sucesso.")
     except Exception as e:
         logging.error(f"Erro ao inicializar o banco de dados: {e}")
 
-def salvar_dados(node_id, timestamp, data):
-    """Salva uma nova leitura no banco de dados."""
+def write_data(node_id, timestamp, data):
+    """Escreve uma nova leitura no banco de dados"""
+
     try:
         conn = sqlite3.connect(DATABASE_FILE)
         cursor = conn.cursor()
+        # As interrogações são placeholders que serão substituídos pelas informações correspondentes dos sensores. Usado para evitar SQL injection 
         cursor.execute("""
-        INSERT INTO leituras (node_id, timestamp, temperatura, umidade, poeira)
-        VALUES (?, ?, ?, ?, ?)
-        """, (node_id, timestamp, data.get('temperature'), data.get('humidity'), data.get('dust_level')))
+            INSERT INTO Readings (node_id, timestamp, temperature, humidity, dust)
+            VALUES (?, ?, ?, ?, ?)
+            """, (node_id, timestamp, data.get('temperature'), data.get('humidity'), data.get('dust_level')))
         conn.commit()
         conn.close()
         return True
+
     except Exception as e:
         logging.error(f"Erro ao salvar dados: {e}")
         return False
 
-def ler_ultimos_dados(limit=10):
+def read_last_data(limit=10):
     """Lê as últimas 'limit' leituras do banco de dados."""
+
     try:
         conn = sqlite3.connect(DATABASE_FILE)
         conn.row_factory = sqlite3.Row # Permite acessar colunas pelo nome
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM leituras ORDER BY id DESC LIMIT ?", (limit,))
-        dados = cursor.fetchall()
+        # Seleciona últimas 'limit' leituras dos sensores 
+        cursor.execute("SELECT * FROM Readings ORDER BY id DESC LIMIT ?", (limit,))
+        dados = cursor.fetchall() # Busca os resultados da consulta SQL
         conn.close()
         return dados
+
     except Exception as e:
         logging.error(f"Erro ao ler dados: {e}")
         return []
