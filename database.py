@@ -17,7 +17,8 @@ def initialize_db():
             timestamp TEXT NOT NULL,
             temperature REAL,
             humidity REAL,
-            dust REAL
+            dust REAL,
+            battery REAL
         )
         """)
         conn.commit() # Salvar mudanças 
