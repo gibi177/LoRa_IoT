@@ -28,9 +28,9 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             html += "<p>Aguardando recebimento dos dados...</p>"
         else:
             # TODO: Checar unidade do sensor de poeira
-            html += "<table><tr><th>ID do Nó</th><th>Timestamp</th><th>Temperatura (°C)</th><th>Umidade (%)</th><th>Poeira (a definir unidade)</th></tr>"
+            html += "<table><tr><th>ID do Nó</th><th>Timestamp</th><th>Temperatura (°C)</th><th>Umidade (%)</th><th>Poeira (a definir unidade)</th><th>Bateria (%)</th></tr>"
             for line in data:
-                html += f"<tr><td>{line['node_id']}</td><td>{line['timestamp']}</td><td>{line['temperature']}</td><td>{line['humidity']}</td><td>{line['dust']}</td></tr>"
+                html += f"<tr><td>{line['node_id']}</td><td>{line['timestamp']}</td><td>{line['temperature']}</td><td>{line['humidity']}</td><td>{line['dust']}</td><td>{line['battery']}</td></tr>"
             html += "</table>"
             
         html += "</body></html>"

@@ -15,7 +15,8 @@ def generate_simulated_data():
             # Gera dados aletaórios dentro de um certo intervalo de valores e com precisão de duas casas decimais
             "temperature": round(random.uniform(20.0, 35.0), 2),
             "humidity": round(random.uniform(40.0, 75.0), 2),
-            "dust_level": round(random.uniform(50.0, 300.0), 2)
+            "dust_level": round(random.uniform(50.0, 300.0), 2),
+            "battery": round(random.uniform(0.00, 100.00),2)
         }
     }
 

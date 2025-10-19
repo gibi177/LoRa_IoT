@@ -48,10 +48,6 @@ class DataHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(404) # Not Found
             self.end_headers()
 
-    def do_GET(self):
-        # Futuramente, pode ser usado para uma API de leitura
-        self.send_response(404)
-        self.end_headers()
 
 if __name__ == "__main__":
     # Garante que o banco de dados e a tabela existam antes de iniciar o servidor

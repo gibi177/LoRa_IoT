@@ -34,9 +34,9 @@ def write_data(node_id, timestamp, data):
         cursor = conn.cursor()
         # As interrogações são placeholders que serão substituídos pelas informações correspondentes dos sensores. Usado para evitar SQL injection 
         cursor.execute("""
-            INSERT INTO Readings (node_id, timestamp, temperature, humidity, dust)
-            VALUES (?, ?, ?, ?, ?)
-            """, (node_id, timestamp, data.get('temperature'), data.get('humidity'), data.get('dust_level')))
+            INSERT INTO Readings (node_id, timestamp, temperature, humidity, dust, battery)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, (node_id, timestamp, data.get('temperature'), data.get('humidity'), data.get('dust_level'), data.get('battery')))
         conn.commit()
         conn.close()
         return True
