@@ -4,14 +4,14 @@ import json
 import requests
 from datetime import datetime, timezone
 
-# Configurações
-SERIAL_PORT = '/dev/ttyACM0'  # Altere para a porta serial onde seu Arduino está conectado (exemplo: COM3 no Windows, /dev/ttyUSB0 no Linux)
+# Config
+SERIAL_PORT = '/dev/ttyACM0'  # Cheque qual a porta serial que seu Arduino está conectado (muda de acordo com o SO)
 BAUD_RATE = 9600
-SERVER_URL = 'http://localhost:8000/data'  # URL do seu backend para envio dos dados
+SERVER_URL = 'http://localhost:8000/data'  
 
 def parse_sensor_data(line):
     try:
-        # A linha vem como: 33.07,27.49,123,36.58
+        # No formato: 33.07,27.49,123,36.58
         parts = line.strip().split(',')
         if len(parts) != 4:
             print(f"Formato inválido: {line}")
@@ -23,7 +23,7 @@ def parse_sensor_data(line):
         battery = float(parts[3])
 
         data = {
-            "node_id": "sala_B_02",  # Exemplo fixo, adapte conforme sua rede
+            "node_id": "sala_B_02",  # Exemplo fixo
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "data": {
                 "temperature": temperature,
