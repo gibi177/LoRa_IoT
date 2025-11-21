@@ -3,35 +3,62 @@ import socketserver
 import logging
 from database import read_last_data
 
-# Servidor ficará disponível em página web, porta 8080
 DASHBOARD_PORT = 8080
 
 class DashboardHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        # Define cabeçalho com tipo de conteúto que será enviado (html)
         self.send_response(200)
         self.send_header('Content-type', 'text/html; charset=utf-8')
         self.end_headers()
 
-        # Busca os últimos dados do database
         data = read_last_data(15)
 
-        # Gera o HTML dinamicamente
-        html = "<html><head><title>Dashboard de Monitoramento</title>"
-        # Refresh cada 5 segundos
+        html = "<html><head><title>Dashboard LoRa</title>"
         html += '<meta http-equiv="refresh" content="5">'
-        html += "<style> body { font-family: sans-serif; } table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; } </style>"
+        html += """
+        <style> 
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; } 
+            h1 { color: #333; }
+            table { border-collapse: collapse; width: 100%; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); } 
+            th, td { border: 1px solid #dddddd; text-align: center; padding: 12px; } 
+            th { background-color: #009879; color: white; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+            .good { color: green; font-weight: bold; }
+            .weak { color: orange; font-weight: bold; }
+            .bad { color: red; font-weight: bold; }
+        </style>
+        """
         html += "</head><body>"
-        html += "<h1>Dashboard de Monitoramento Ambiental</h1>"
+        html += "<h1>📡 Monitoramento Ambiental & Rede LoRa</h1>"
         
         if not data:
-            html += "<p>Aguardando recebimento dos dados...</p>"
+            html += "<p>Aguardando dados...</p>"
         else:
-            # TODO: Checar unidade do sensor de poeira
-            html += "<table><tr><th>ID do Nó</th><th>Timestamp</th><th>Temperatura (°C)</th><th>Umidade (%)</th><th>Poeira (a definir unidade)</th><th>Bateria (%)</th></tr>"
+            html += "<table><thead><tr>"
+            html += "<th>ID Nó</th><th>Timestamp</th>"
+            html += "<th>Temp (°C)</th><th>Umid (%)</th><th>Poeira</th><th>Bat (%)</th>"
+            html += "<th>Seq #</th><th>RSSI (dBm)</th><th>SNR (dB)</th>"
+            html += "</tr></thead><tbody>"
+            
             for line in data:
-                html += f"<tr><td>{line['node_id']}</td><td>{line['timestamp']}</td><td>{line['temperature']}</td><td>{line['humidity']}</td><td>{line['dust']}</td><td>{line['battery']}</td></tr>"
-            html += "</table>"
+                # Lógica visual para qualidade do sinal RSSI
+                rssi = line['rssi'] if line['rssi'] is not None else -999
+                rssi_class = "good"
+                if rssi < -100: rssi_class = "bad"
+                elif rssi < -85: rssi_class = "weak"
+
+                html += f"<tr>"
+                html += f"<td>{line['node_id']}</td>"
+                html += f"<td>{line['timestamp'].split('T')[1][:8]}</td>" # Mostra só a hora
+                html += f"<td>{line['temperature']}</td>"
+                html += f"<td>{line['humidity']}</td>"
+                html += f"<td>{line['dust']}</td>"
+                html += f"<td>{line['battery']}</td>"
+                html += f"<td>{line['seq_no']}</td>"
+                html += f"<td class='{rssi_class}'>{line['rssi']}</td>"
+                html += f"<td>{line['snr']}</td>"
+                html += f"</tr>"
+            html += "</tbody></table>"
             
         html += "</body></html>"
         
@@ -40,4 +67,4 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
 if __name__ == "__main__":
     with socketserver.TCPServer(("", DASHBOARD_PORT), DashboardHandler) as httpd:
         logging.info(f"Dashboard disponível em http://localhost:{DASHBOARD_PORT}")
-        httpd.serve_forever() # Funciona continuamente
+        httpd.serve_forever()
