@@ -23,9 +23,19 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             th, td { border: 1px solid #dddddd; text-align: center; padding: 12px; } 
             th { background-color: #009879; color: white; }
             tr:nth-child(even) { background-color: #f2f2f2; }
+            
+            /* Classes para qualidade de sinal RSSI */
             .good { color: green; font-weight: bold; }
             .weak { color: orange; font-weight: bold; }
             .bad { color: red; font-weight: bold; }
+
+            /* Classe para ALERTA DE TEMPERATURA */
+            .alert { 
+                color: white; 
+                background-color: #ff4d4d; /* Fundo vermelho claro */
+                font-weight: bold;
+                border: 1px solid #cc0000;
+            }
         </style>
         """
         html += "</head><body>"
@@ -47,10 +57,21 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 if rssi < -100: rssi_class = "bad"
                 elif rssi < -85: rssi_class = "weak"
 
+                # Lógica visual para ALERTA DE TEMPERATURA (> 40°C)
+                temp_val = line['temperature']
+                temp_class = ""
+                if temp_val > 40.0:
+                    temp_class = "alert"
+
                 html += f"<tr>"
                 html += f"<td>{line['node_id']}</td>"
-                html += f"<td>{line['timestamp'].split('T')[1][:8]}</td>" # Mostra só a hora
-                html += f"<td>{line['temperature']}</td>"
+                # Mostra só a hora (HH:MM:SS) do timestamp
+                timestamp_short = line['timestamp'].split('T')[1][:8] if 'T' in line['timestamp'] else line['timestamp']
+                html += f"<td>{timestamp_short}</td>"
+                
+                # Aplica a classe de alerta na célula de temperatura
+                html += f"<td class='{temp_class}'>{temp_val}</td>"
+                
                 html += f"<td>{line['humidity']}</td>"
                 html += f"<td>{line['dust']}</td>"
                 html += f"<td>{line['battery']}</td>"

@@ -2,7 +2,7 @@ import serial
 import time
 import json
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 # --- CONFIGURAÇÃO ---
 SERIAL_PORT = '/dev/ttyACM0'  # Verifique sua porta!
@@ -29,7 +29,7 @@ def parse_sensor_data(line):
 
         data = {
             "node_id": "sala_B_02", 
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(timezone(timedelta(hours=-3))).isoformat(),
             "data": {
                 "temperature": temperature,
                 "humidity": humidity,
