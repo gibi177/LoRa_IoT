@@ -29,7 +29,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             .weak { color: orange; font-weight: bold; }
             .bad { color: red; font-weight: bold; }
 
-            /* Classe para ALERTA DE TEMPERATURA */
+            /* Classe para alerta de temperatura */
             .alert { 
                 color: white; 
                 background-color: #ff4d4d; /* Fundo vermelho claro */
@@ -39,7 +39,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
         </style>
         """
         html += "</head><body>"
-        html += "<h1>📡 Monitoramento Ambiental & Rede LoRa</h1>"
+        html += "<h1>Monitoramento Ambiental & Rede LoRa</h1>"
         
         if not data:
             html += "<p>Aguardando dados...</p>"
@@ -57,7 +57,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 if rssi < -100: rssi_class = "bad"
                 elif rssi < -85: rssi_class = "weak"
 
-                # Lógica visual para ALERTA DE TEMPERATURA (> 40°C)
+                # Lógica visual para alerta de temperatura (> 40°C)
                 temp_val = line['temperature']
                 temp_class = ""
                 if temp_val > 40.0:

@@ -1,11 +1,7 @@
-/*
- * Gateway LoRa OTIMIZADO v3 (Receptor)
- * Recebe Struct Binária, extrai métricas de rede e envia CSV completo.
- */
-
 #include <Arduino.h>
 #include <RadioLib.h>
 
+// Pinagem, igual ao cliente-sensor
 #define NSS_PIN 41
 #define DIO1_PIN 39
 #define RST_PIN 42
@@ -13,13 +9,14 @@
 
 SX1262 radio = new Module(NSS_PIN, DIO1_PIN, RST_PIN, BUSY_PIN);
 
+// Payload a ser recebido
 struct __attribute__((packed)) SensorData
 {
   int16_t temp_raw;
   uint16_t humid_raw;
   uint16_t dust_raw;
   uint16_t batt_raw;
-  uint16_t seq_no; // NOVO CAMPO
+  uint16_t seq_no; 
 };
 
 volatile bool pacoteRecebido = false;
@@ -36,11 +33,11 @@ void setup()
 {
   Serial.begin(115200);
   delay(2000);
-  Serial.println("Gateway LoRa Iniciado (Métricas de Rede Ativas)");
 
   int state = radio.begin(915.0);
   if (state == RADIOLIB_ERR_NONE)
   {
+    // Configurações precisam ser idênticas ao cliente-sensor
     radio.setSpreadingFactor(10);
     radio.setCodingRate(6);
     radio.setDio1Action(setFlag);
@@ -48,8 +45,7 @@ void setup()
   }
   else
   {
-    while (true)
-      ;
+    while (true);
   }
 }
 
@@ -73,12 +69,11 @@ void loop()
       float batt = packet->batt_raw / 100.0;
       uint16_t seq = packet->seq_no;
 
-      // NOVO: Coleta métricas de rede do pacote recebido
+      // Coleta métricas de rede do pacote recebido
       float rssi = radio.getRSSI();
       float snr = radio.getSNR();
 
-      // Formato CSV expandido:
-      // temp,humid,dust,batt,seq_no,rssi,snr
+      // Formato temp,humid,dust,batt,seq_no,rssi,snr
       Serial.print(temp, 2);
       Serial.print(",");
       Serial.print(humid, 2);
@@ -88,10 +83,10 @@ void loop()
       Serial.print(batt, 2);
       Serial.print(",");
       Serial.print(seq);
-      Serial.print(","); // Sequence Number
+      Serial.print(","); 
       Serial.print(rssi, 1);
-      Serial.print(",");      // RSSI
-      Serial.println(snr, 2); // SNR
+      Serial.print(",");
+      Serial.println(snr, 2);
     }
     else if (state == RADIOLIB_ERR_CRC_MISMATCH)
     {

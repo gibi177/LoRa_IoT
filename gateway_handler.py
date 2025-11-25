@@ -4,8 +4,7 @@ import json
 import requests
 from datetime import datetime, timezone, timedelta
 
-# --- CONFIGURAÇÃO ---
-SERIAL_PORT = '/dev/ttyACM0'  # Verifique sua porta!
+SERIAL_PORT = '/dev/ttyACM0'  # Porta muda dependendo do dispositivo e SO
 BAUD_RATE = 115200
 SERVER_URL = 'http://localhost:8000/data'  
 
@@ -23,9 +22,9 @@ def parse_sensor_data(line):
         humidity = float(parts[1])
         dust_level = float(parts[2])
         battery = float(parts[3])
-        seq_no = int(parts[4])     # NOVO
-        rssi = float(parts[5])     # NOVO
-        snr = float(parts[6])      # NOVO
+        seq_no = int(parts[4])     
+        rssi = float(parts[5])     
+        snr = float(parts[6])      
 
         data = {
             "node_id": "sala_B_02", 

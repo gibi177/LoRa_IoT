@@ -9,7 +9,6 @@ def initialize_db():
         conn = sqlite3.connect(DATABASE_FILE)
         cursor = conn.cursor()
         
-        # Adicionando colunas novas: seq_no, rssi, snr
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Readings (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -32,7 +31,8 @@ def initialize_db():
 
 def write_data(node_id, timestamp, data, network):
     """Escreve uma nova leitura no banco de dados.
-       'data' contém os sensores. 'network' contém as métricas de rede.
+       'data' contém as informações dos sensores. 
+       'network' contém as métricas de rede.
     """
     try:
         conn = sqlite3.connect(DATABASE_FILE)
